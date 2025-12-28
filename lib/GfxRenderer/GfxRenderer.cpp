@@ -250,6 +250,55 @@ void GfxRenderer::fillRect(const int x, const int y, const int width, const int 
   }
 }
 
+// Use Bayer matrix 4x4 dithering to fill the rectangle with a grey level - 0 white to 15 black
+void GfxRenderer::fillRectGrey(const int x, const int y, const int width, const int height, const int greyLevel) const {
+  static constexpr uint8_t bayer4x4[4][4] = {
+      {0, 8, 2, 10},
+      {12, 4, 14, 6},
+      {3, 11, 1, 9},
+      {15, 7, 13, 5},
+  };
+  static constexpr int matrixSize = 4;
+  static constexpr int matrixLevels = matrixSize * matrixSize;
+
+  const int normalizedGrey = (greyLevel * 255) / (matrixLevels - 1);
+  const int clampedGrey = std::max(0, std::min(normalizedGrey, 255));
+  const int threshold = (clampedGrey * (matrixLevels + 1)) / 256;
+
+  for (int dy = 0; dy < height; ++dy) {
+    const int screenY = y + dy;
+    const int matrixY = screenY & (matrixSize - 1);
+    for (int dx = 0; dx < width; ++dx) {
+      const int screenX = x + dx;
+      const int matrixX = screenX & (matrixSize - 1);
+      const uint8_t patternValue = bayer4x4[matrixY][matrixX];
+      const bool black = patternValue < threshold;
+      drawPixel(screenX, screenY, black);
+    }
+  }
+}
+
+// Color -1 white, 0 clear, 1 black
+void GfxRenderer::fillArc(const int maxRadius, const int cx, const int cy, const int xDir, const int yDir, const int insideColor, const int outsideColor) const {
+  const int radiusSq = maxRadius * maxRadius;
+  for (int dy = 0; dy <= maxRadius; ++dy) {
+    for (int dx = 0; dx <= maxRadius; ++dx) {
+      const int distSq = dx * dx + dy * dy;
+      const int px = cx + xDir * dx;
+      const int py = cy + yDir * dy;
+      if (distSq > radiusSq) {
+        if (outsideColor != 0) {
+          drawPixel(px, py, outsideColor == 1);
+        }
+      } else {
+        if (insideColor != 0) {
+          drawPixel(px, py, insideColor == 1);
+        }
+      }
+    }
+  }
+};
+
 void GfxRenderer::drawImage(const uint8_t bitmap[], const int x, const int y, const int width, const int height) const {
   // Flip X and Y for portrait mode
   einkDisplay.drawImage(bitmap, y, x, height, width);

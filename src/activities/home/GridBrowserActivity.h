@@ -30,7 +30,7 @@ class GridBrowserActivity final : public Activity {
   std::vector<FileInfo> files;
   int selectorIndex = 0;
   int previousSelectorIndex = -1;
-  int page;
+  int page = 0;
   bool updateRequired = false;
   bool renderRequired = false;
   const std::function<void(const std::string&)> onSelect;

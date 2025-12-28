@@ -17,7 +17,7 @@ constexpr int TILE_PADDING = 5;
 constexpr int THUMB_W = 90;
 constexpr int THUMB_H = 120;
 constexpr int TILE_TEXT_H = 60;
-constexpr int gridLeftOffset = 45;
+constexpr int gridLeftOffset = 37;
 constexpr int gridTopOffset = 125;
 }  // namespace
 
@@ -61,7 +61,7 @@ void GridBrowserActivity::loadFiles() {
         std::string ext = filename.substr(dot);
         basename = filename.substr(0, dot); 
         // lowercase ext for case-insensitive compare
-        for (char &c : ext) c = (char)tolower(c);
+        std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c){ return std::tolower(c); });
         if (ext == ".epub") {
           type = F_EPUB;
         } else if (ext == ".thumb.bmp") {
@@ -136,7 +136,7 @@ void GridBrowserActivity::loop() {
     }
   } else if (inputManager.wasPressed(InputManager::BTN_BACK)) {
     if (basepath != "/") {
-      basepath = basepath.substr(0, basepath.rfind('/'));
+      basepath.resize(basepath.rfind('/'));
       if (basepath.empty()) basepath = "/";
       loadFiles();
       renderRequired = true;
@@ -197,9 +197,9 @@ void GridBrowserActivity::render(bool clear) const {
     auto folderName = basepath == "/" ? "SD card" : basepath.substr(basepath.rfind('/') + 1).c_str();
     drawFullscreenWindowFrame(renderer, folderName);
   }
-  bool hasGeyscaleBitmaps = false;
   
   if (!files.empty()) {
+    bool hasGeyscaleBitmaps = false;
     for (int pass = 0; pass < 3; pass++) {
       if (pass > 0) {
         renderer.clearScreen(0x00);
@@ -255,7 +255,7 @@ void GridBrowserActivity::render(bool clear) const {
         }
       } else if (pass == 1) {
         renderer.copyGrayscaleLsbBuffers();
-      } else if (pass == 2) {
+      } else {
         renderer.copyGrayscaleMsbBuffers();
         renderer.displayGrayBuffer();
         renderer.setRenderMode(GfxRenderer::BW);

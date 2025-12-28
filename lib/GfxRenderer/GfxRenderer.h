@@ -51,6 +51,8 @@ class GfxRenderer {
   void drawArc(int maxRadius, int cx, int cy, int xDir, int yDir, int lineWidth, bool state) const;
   void drawRoundedRect(int x, int y, int width, int height, int lineWidth, int cornerRadius, bool state) const;
   void fillRect(int x, int y, int width, int height, bool state = true) const;
+  void fillRectGrey(int x, int y, int width, int height, int greyLevel) const;
+  void fillArc(int maxRadius, int cx, int cy, int xDir, int yDir, int insideColor, int outsideColor) const;
   void drawImage(const uint8_t bitmap[], int x, int y, int width, int height) const;
   void drawIcon(const uint8_t bitmap[], int x, int y, int width, int height) const;
   void drawBitmap(const Bitmap& bitmap, int x, int y, int maxWidth, int maxHeight) const;

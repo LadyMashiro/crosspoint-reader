@@ -14,6 +14,13 @@ constexpr int batteryHeight = 10;
 
 void drawWindowFrame(GfxRenderer& renderer, int xMargin, int y, int height, bool hasShadow, const char* title) {
     const int windowWidth = GfxRenderer::getScreenWidth() - 2 * xMargin;
+
+    if (title) { // Header background
+        renderer.fillRectGrey(xMargin, y, windowWidth, windowHeaderHeight, 5);
+        renderer.fillArc(windowCornerRadius, xMargin + windowCornerRadius, y + windowCornerRadius, -1, -1, 0, -1);               // TL
+        renderer.fillArc(windowCornerRadius, windowWidth + xMargin - windowCornerRadius, y + windowCornerRadius, 1, -1, 0, -1);  // TR
+    }
+    
     renderer.drawRoundedRect(xMargin, y, windowWidth, height, windowBorderWidth, windowCornerRadius, true);
 
     if (hasShadow) {
@@ -43,7 +50,6 @@ void drawStatusBar(GfxRenderer& renderer) {
     // Left aligned battery icon and percentage
     const uint16_t percentage = battery.readPercentage();
     const auto percentageText = std::to_string(percentage) + "%";
-    const auto percentageTextWidth = renderer.getTextWidth(SMALL_FONT_ID, percentageText.c_str());
     renderer.drawText(SMALL_FONT_ID, fullscreenWindowMargin + batteryWidth + 5, textY, percentageText.c_str());
 
     // 1 column on left, 2 columns on right, 5 columns of battery body
