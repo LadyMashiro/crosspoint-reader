@@ -8,6 +8,7 @@
 #include "MappedInputManager.h"
 #include "WifiCredentialStore.h"
 #include "activities/util/KeyboardEntryActivity.h"
+#include "components/UITheme.h"
 #include "fontIds.h"
 
 void WifiSelectionActivity::taskTrampoline(void* param) {
@@ -586,7 +587,7 @@ void WifiSelectionActivity::renderNetworkList() const {
   // Draw help text
   renderer.drawText(SMALL_FONT_ID, 20, pageHeight - 75, "* = Encrypted | + = Saved");
   const auto labels = mappedInput.mapLabels("« Back", "Connect", "", "");
-  renderer.drawButtonHints(UI_10_FONT_ID, labels.btn1, labels.btn2, labels.btn3, labels.btn4);
+  UITheme::drawButtonHints(renderer, labels.btn1, labels.btn2, labels.btn3, labels.btn4);
 }
 
 void WifiSelectionActivity::renderConnecting() const {
